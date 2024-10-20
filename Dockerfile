@@ -11,7 +11,7 @@ RUN curl https://raw.githubusercontent.com/rapid7/metasploit-omnibus/master/conf
     && chmod 755 msfinstall \
     && ./msfinstall
 
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONUNBUFFERED=1
 ENV PYTHONPATH=/opt/metasploit-framework/embedded/framework/lib/msf/core/modules/external/python
 
 COPY **/msfmodules/*.py /root/.msf4/modules/exploits/protectai/
